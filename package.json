@@ -1,0 +1,32 @@
+{
+  "name": "toolbox",
+  "version": "1.0.0",
+  "description": "Tools from work and learning experience",
+  "keywords": [],
+  "author": "Skye Sun",
+  "license": "MIT",
+  "main": "index.js",
+  "module": "index.esm.js",
+  "directories": {
+    "lib": "lib"
+  },
+  "scripts": {
+    "build:self": "rollup -c config/rollup.config.js",
+    "build:esm": "rollup -c config/rollup.config.esm.js",
+    "build:aio": "rollup -c config/rollup.config.aio.js",
+    "build": "npm run build:self && npm run build:esm && npm run build:aio"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.1.2",
+    "@babel/plugin-transform-runtime": "^7.21.0",
+    "@babel/preset-env": "^7.1.0",
+    "rollup": "^0.57.1",
+    "rollup-plugin-babel": "^4.0.3",
+    "rollup-plugin-node-resolve": "^3.0.3"
+  },
+  "sideEffects": false,
+  "dependencies": {
+    "@babel/runtime-corejs2": "^7.21.0",
+    "core-js": "^3.29.1"
+  }
+}
