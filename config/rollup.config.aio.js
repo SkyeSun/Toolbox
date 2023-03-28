@@ -14,6 +14,6 @@ module.exports = {
       main: true,
       extensions: ['.js']
     }),
-    common.getCompiler(),
+    // common.getCompiler(),
   ]
 }

@@ -7,3 +7,7 @@
 
 # misc
 .DS_Store
+
+# test
+/coverage
+.nyc_output/

@@ -1,13 +1,19 @@
-import { throttle_2 } from './debounceThrottle';
+// import { debounce, throttle_1, throttle_2 } from './debounceThrottle';
+import { expressionCalculator } from './expressionCalculator';
 
-const exprsCalculator = require('./expressionCalculator')
-
-console.log(exprsCalculator(`2*(${Array.from(1, 2, 3).join('+')})`))
-
-const test3 = throttle_2((i) => {
-	console.log(i)
-}, 1000)
-
-window.onresize = () => {
-	test3(3)
+export default {
+	// debounce,
+	// throttle_1,
+	// throttle_2,
+	expressionCalculator,
 }
+
+// console.log(exprsCalculator(`2*(${Array.from(1, 2, 3).join('+')})`))
+
+// const test3 = throttle_2((i) => {
+// 	console.log(i)
+// }, 1000)
+
+// window.onresize = () => {
+// 	test3(3)
+// }

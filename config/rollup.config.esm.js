@@ -7,5 +7,5 @@ module.exports = {
     format: 'es',
     banner: common.banner,
   },
-  plugins: [common.getCompiler()],
+  // plugins: [common.getCompiler()],
 }
