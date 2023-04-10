@@ -1,6 +1,6 @@
 {
   "name": "@skyesun/toolbox",
-  "version": "1.0.0",
+  "version": "0.0.1",
   "description": "Tools from work and learning experience",
   "keywords": [],
   "author": "Skye Sun",
@@ -8,6 +8,9 @@
   "main": "index.js",
   "module": "index.esm.js",
   "files": ["/dist", "LICENSE"],
+  "repository": {
+    "url": "https://github.com/SkyeSun/Toolbox"
+  },
   "publishConfig": {
     "registry": "https://registry.npmjs.org",
     "access": "public"
