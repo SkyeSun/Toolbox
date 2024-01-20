@@ -4,6 +4,9 @@
 
 // 用一个全局变量存储被注册的副作用函数
 let activeEffect
+// 【解决问题 4 —— 副作用函数嵌套】
+// effect 栈
+const effectStack = []
 
 // 【解决问题 1 —— 无法收集使用任意副作用函数】
 // 用于注册副作用函数的函数
@@ -14,8 +17,13 @@ function registEffect(fn) {
     cleanup(effectFn)
     // 当 effectFn 执行时，将其设置为当前激活的副作用函数
     activeEffect = effectFn
+    // 执行副作用函数之前将当前副作用函数压入栈中
+    effectStack.push(effectFn)
     // 执行副作用函数
     fn()
+    // 当前副作用执行完成后，弹出栈，还原 actativeEffect
+    effectStack.pop()
+    activeEffect = effectStack[effectSck.length - 1]
   }
   // activeEffect.deps 用来存储所有与该副作用函数相关联的依赖合集
   effectFn.deps = []
@@ -76,7 +84,14 @@ function trigger(target, key) {
   // 取出 key 对应的副作用函数集合
   const effectList = depsMap.get(key)
   // 解决 Set 结构遍历时的无限循环问题
-  const effectsToRun = new Set(effectList)
+  const effectsToRun = new Set()
+  effectList &&
+    effectList.forEach((effectFn) => {
+      // 避免无限循环，如果副作用函数与当前正在执行的相同，则不再次执行
+      if (effectFn !== activeEffect) {
+        effectsToRun.add(effectFn)
+      }
+    })
   // 把副作用函数依次取出并执行
   effectsToRun && effectsToRun.forEach((fn) => fn())
 }
