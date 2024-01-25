@@ -1,11 +1,11 @@
 // import { debounce, throttle_1, throttle_2 } from './debounceThrottle';
-import { expressionCalculator } from './expressionCalculator';
+import { ExpressionCalculator } from './Common'
 
 export default {
-	// debounce,
-	// throttle_1,
-	// throttle_2,
-	expressionCalculator,
+  // debounce,
+  // throttle_1,
+  // throttle_2,
+  ExpressionCalculator,
 }
 
 // console.log(exprsCalculator(`2*(${Array.from(1, 2, 3).join('+')})`))

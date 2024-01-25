@@ -1,0 +1,40 @@
+<!-- 网格展示列表，自适应宽度，行末所剩不足最小单元宽度时，自适应等比放大，超过则自动换行 -->
+<style>
+  .container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    grid-gap: 20px;
+    align-content: space-between;
+  }
+  .item {
+    background-color: cadetblue;
+  }
+  .item::after {
+    content: '';
+    display: block;
+    margin-top: 100%;
+  }
+</style>
+
+<div class="container">
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+  <div class="item"></div>
+</div>
