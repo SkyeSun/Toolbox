@@ -53,6 +53,7 @@ class SkyePromise {
       this.#catchCbs = []
     }
   }
+
   /**
    * Promise 构造函数参数中的 resolve 方法，在构造函数的参数方法执行过程中被用户主动调用
    * @param {*} value 
@@ -76,6 +77,7 @@ class SkyePromise {
       this.#runCallbacks()
     })
   }
+
   /**
    * Promise 构造函数参数中的 reject 方法，在构造函数的参数方法执行过程中被用户主动调用
    * @param {*} value 
@@ -103,6 +105,7 @@ class SkyePromise {
       this.#runCallbacks()
     })
   }
+
   /**
    * 用于指定 Promise 对象状态改变后的下一步操作回调，包括成功和失败状态的回调；可多次调用，链式调用
    * @param {*} thenCb 
@@ -146,6 +149,7 @@ class SkyePromise {
       this.#runCallbacks()
     })
   }
+
   /**
    * 用于单独执行 Promise 的错误处理回调
    * @param {*} cb 
@@ -155,6 +159,7 @@ class SkyePromise {
     // 利用 then 方法的特殊情况即可实现
     return this.then(undefined, cb)
   }
+
   /**
    * 用于在 Promise 执行结束的最后指定回调操作，在此处指定的处理方法不论成功或失败都会执行
    * @param {*} cb 
@@ -183,6 +188,7 @@ class SkyePromise {
       resolve(value)
     })
   }
+
   /**
    * 状态改变为失败的静态方法
    * @param {*} value 
@@ -194,6 +200,7 @@ class SkyePromise {
       reject(value)
     })
   }
+
   /**
    * 全部的 Promise 都成功返回才算成功，否则只要出现一个失败，则立即返回失败信息
    * @param {*} promises 接受一个 Promise 数组
@@ -228,6 +235,7 @@ class SkyePromise {
       }
     })
   }
+
   /**
    * 与 all() 方法类似，区别在于每一个 Promise 都需要明确获取到结果，不论成功还是失败，返回数组中也是包含了每一个成功或失败的状态信息的数组
    * @param {*} promises 
@@ -254,6 +262,7 @@ class SkyePromise {
       }
     })
   }
+
   /**
    * 无论成功或失败，第一个 resolve 或 reject 的 Promise 直接结束，改变状态
    * @param {*} promises 
@@ -266,6 +275,7 @@ class SkyePromise {
       })
     })
   }
+
   /**
    * 与 all() 方法相反，只要有一个成功，即可返回成功，否则全部失败的情况下，返回失败的结果数组
    * @param {*} promises 
@@ -290,6 +300,87 @@ class SkyePromise {
     })
   }
   
+  /**
+   * 失败自动重试，有最大次数限制
+   * @param {*} promise
+   * @param {*} maxTryNumber
+   * @returns
+   */
+  static retry(promise, maxTryNumber) {
+    return new SkyePromise((resolve, reject) => {
+      const attempt = tryNum => {
+        promise().then(resolve).catch(error => {
+          if (tryNum < maxTryNumber) {
+            attempt(tryNum + 1)
+          } else {
+            reject(error)
+          }
+        })
+      }
+      attempt(1)
+    })
+  }
+
+  /**
+   * 并发控制，同时发起多个异步任务，并发的任务最多只能有 n 个
+   * @param {*} promises
+   * @param {*} limit
+   * @returns
+   */
+  static concurrentLimit(pros, limit) {
+    return new SkyePromise((resolve, reject) => {
+      let res = [], runningCount = 0, queue = [...pros]
+      const run = () => {
+        while (runningCount < limit && queue.length > 0) {
+          const p = queue.shift()
+          runningCount++
+          p().then(val => {
+            runningCount--
+            res.push(val)
+            run()
+          }, reject)
+        }
+        if (res.length === pros.length) {
+          resolve(res)
+        }
+      }
+      run()
+    })
+  }
+
+  /**
+   * 返回一个函数，这个函数添加一个立即执行的异步任务，但限制最大同时执行的任务个数，当达到限制数量时，后续添加的任务等待前置任务执行完成后再执行
+   * @param limit
+   * @returns function append(task) {}
+   */
+  static immediateTask(limit) {
+    let waittingQueue = [], runningCount = 0
+    return function(task) {
+      return new SkyePromise((resolve, reject) => {
+        const run = () => {
+          runningCount++
+          task().then(resolve, reject).finally(() => {
+            runningCount--
+            runNext()
+          })
+        }
+
+        const runNext = () => {
+          if (runningCount >= limit || !waittingQueue.length) {
+            return
+          }
+          let tsk = waittingQueue.shift()
+          tsk()
+        }
+
+        if (runningCount < limit) {
+          run()
+        } else {
+          waittingQueue.push(run)
+        }
+      })
+    }
+  }
 }
 
 /**

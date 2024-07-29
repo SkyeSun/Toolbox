@@ -163,3 +163,54 @@ class Channel {
   p1.publish('e1')
   p1.publish('e2')
 }
+
+/**
+ * 事件中心
+ */
+class EventBus {
+  constructor() {
+    this.events = {}
+  }
+
+  on(event, callback) {
+    if (!this.events[event]) {
+      this.events[event] = []
+    }
+    this.events[event].push(callback)
+  }
+
+  emit(event, ...args) {
+    if (!this.events[event]?.length) {
+      return console.log(event, ' is not defined')
+    }
+    this.events[event].forEach(cb => cb(...args))
+  }
+
+  off(event, callback) {
+    if (!callback) {
+      delete this.events[event]
+      return
+    }
+    const idx = this.events[event].findIndex(cb => cb === callback)
+    if (idx === -1) {
+      return
+    }
+    this.events[event].splice(idx, 1)
+  }
+
+  once(event, callback) {
+    const one = (...args) => {
+      callback(...args)
+      this.off(event, one)
+    }
+    this.on(event, one)
+  }
+}
+
+const e1 = new EventBus()
+e1.on('ev1', () => console.log('e1 ev1 触发了'))
+e1.once('ev2', (...params) => console.log('e1 ev2 触发了 ' + [...params].join(', ')))
+e1.emit('ev2', 1, 2)
+// e1.off('ev2')
+e1.emit('ev2', 3, 4)
+e1.emit('ev1')

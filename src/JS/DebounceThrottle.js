@@ -69,3 +69,40 @@ export const throttle_2 = (fn, delay) => {
 	而时间戳方案并不会，
 	因此时间戳方案的节流实现更好一些
 */
+
+const db = (fn, delay) => {
+	let timer = null
+	return function(...args) {
+		const ctx = this
+		clearTimeout(timer)
+		timer = setTimeout(() => {
+			fn.apply(ctx, ...args)
+			timer = null
+		}, delay)
+	}
+}
+
+const thrtl1 = (fn, delay) => {
+	let timer = null
+	return function(...args) {
+		if (timer) {
+			return
+		}
+		timer = setTimeout(() => {
+			fn.apply(this, ...args)
+			clearTimeout(timer)
+			timer = null
+		}, delay)
+	}
+}
+
+const thrtl2 = (fn, delay) => {
+	let pre = Date.now()
+	return function(...args) {
+		let now = Date.now()
+		if (now - pre >= delay) {
+			pre = Date.now()
+			return fn.apply(this, ...args)
+		}
+	}
+}
